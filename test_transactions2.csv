@@ -1,0 +1,4 @@
+Date, Time, Money In, Money out, Amount, Currency, Category, Name, Description, Balance
+2023-11-01,10:00,,50.50,,USD,Groceries,Walmart,Supercenter,1000.00
+2023-11-02,11:00,1500.00,,,USD,Salary,Employer,Salary,2500.00
+2023-11-03,12:00,,,25.50,USD,Entertainment,Netflix,Subscription,2474.50

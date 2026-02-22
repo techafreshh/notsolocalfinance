@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finance AI</title>
+    <!-- Google Fonts for sleek typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Sidebar for Uploads and Info -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>Finance AI</h2>
+                <span class="badge">Granite 4</span>
+            </div>
+
+            <div class="upload-section">
+                <h3>Upload Statements</h3>
+                <p>Upload your CSV or PDF bank statements to analyze your spending.</p>
+                <form id="upload-form">
+                    <input type="file" id="file-input" accept=".csv, .pdf" required>
+                    <label for="file-input" class="file-label">Choose File</label>
+                    <span id="file-name" class="file-name">No file chosen</span>
+                    <button type="submit" id="upload-btn" class="primary-btn">Upload</button>
+                </form>
+                <div id="upload-status" class="status-msg hidden"></div>
+
+                <hr style="margin: 1.5rem 0; border: 0; border-top: 1px solid var(--border-color);">
+
+                <div class="delete-section" style="text-align: center;">
+                    <button id="clear-data-btn" class="danger-btn"
+                        style="width: 100%; border: 1px solid #ff4d4f; color: #ff4d4f; background: transparent; padding: 0.75rem; border-radius: 8px; cursor: pointer; transition: all 0.2s;">Wipe
+                        Database (Clear All Data)</button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Chat Area -->
+        <main class="chat-container">
+            <div class="chat-header">
+                <div class="header-titles">
+                    <h3>Financial Assistant</h3>
+                    <p>Ask questions about your transactions, spending habits, or biggest expenses.</p>
+                </div>
+                <button id="clear-chat-btn" class="secondary-btn">New Chat</button>
+            </div>
+
+            <div class="chat-window" id="chat-window">
+                <!-- Messages will appear here -->
+                <div class="message ai">
+                    <div class="avatar">AI</div>
+                    <div class="msg-content">Hello! Please upload your bank statement on the left, then ask me anything
+                        about your finances.</div>
+                </div>
+            </div>
+
+            <form id="chat-form" class="chat-input-area">
+                <input type="text" id="chat-input" placeholder="e.g., Explain my financial gbese" required
+                    autocomplete="off">
+                <button type="submit" id="send-btn" class="send-btn">
+                    <svg viewBox="0 0 24 24" fill="none" class="send-icon">
+                        <path d="M22 2L11 13" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round"></path>
+                        <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round"></path>
+                    </svg>
+                </button>
+            </form>
+        </main>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+
+</html>
