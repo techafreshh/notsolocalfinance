@@ -119,8 +119,8 @@ OLLAMA_HOST=http://192.168.1.100:11434
 
 The `LMSTUDIO_MODEL` name must match what LM Studio expects. Common values:
 - `granite`
-- `llama-3.1`
-- `qwen2.5`
+- `llama-3.2`
+- `qwen3`
 
 Check LM Studio's server logs to see what model name it expects.
 
@@ -141,7 +141,7 @@ Not all LM Studio models support embeddings. If you get errors:
 | `OLLAMA_MODEL` | Chat model for Ollama | `granite4:latest` |
 | `OLLAMA_EMBEDDING_MODEL` | Embedding model for Ollama | `nomic-embed-text-v2-moe` |
 | `LMSTUDIO_HOST` | LM Studio server URL | `http://host.docker.internal:1234` |
-| `LMSTUDIO_MODEL` | Model name for LM Studio | `granite` |
+| `LMSTUDIO_MODEL` | Model name for LM Studio | `qwen3-vl-8b` |
 | `LMSTUDIO_EMBEDDING_MODEL` | Embedding model for LM Studio | `nomic-embed-text-v2-moe` |
 | `LMSTUDIO_API_KEY` | API key for LM Studio | `lm-studio` |
 | `VECTOR_SIZE` | Embedding dimensions | `768` |
