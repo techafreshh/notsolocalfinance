@@ -35,7 +35,7 @@ AI_PROVIDER=lmstudio
 LMSTUDIO_HOST=http://host.docker.internal:1234
 LMSTUDIO_MODEL=granite
 
-# Use Ollama for embeddings (recommended - LM Studio may not support embeddings well)
+# Use Ollama for embeddings (or LM Studio)
 EMBEDDING_PROVIDER=ollama
 OLLAMA_HOST=http://host.docker.internal:11434
 ```
