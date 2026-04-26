@@ -87,14 +87,18 @@ def parse_csv(content: bytes) -> List[Transaction]:
     """Parses a CSV bank statement and returns a list of Transactions."""
     try:
         df = pd.read_csv(io.BytesIO(content))
-        df.columns = [str(c).lower().strip() for c in df.columns]
+        # Remove BOM and non-printable characters from column names
+        df.columns = [c.encode('ascii', 'ignore').decode('ascii').lower().strip() for c in df.columns]
+        print(f"DEBUG: Cleaned CSV Columns: {df.columns.tolist()}")
         mapping = {k: find_idx(df.columns, k) for k in HEADER_MAPS.keys()}
+        print(f"DEBUG: Column Mapping: {mapping}")
         
         if mapping['date'] == -1:
-            print(f"DEBUG: No date column found in CSV. Columns: {df.columns.tolist()}")
+            print(f"DEBUG: Critical - No date column found. Missing a match for one of: {HEADER_MAPS['date']}")
             return []
         
         transactions = []
+        print(f"DEBUG: I'm about to process {len(df)} rows...")
         for _, row in df.iterrows():
             try:
                 date_val = normalize_date(str(row.iloc[mapping['date']]))

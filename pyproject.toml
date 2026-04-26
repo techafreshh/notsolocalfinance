@@ -16,6 +16,12 @@ dependencies = [
     "pydantic-ai>=0.0.18",
     "logfire",
     "python-dotenv",
+    "python-jose[cryptography]",
+    "sqlalchemy[asyncio]",
+    "aiosqlite",
+    "authlib",
+    "httpx",
+    "itsdangerous",
     "fastembed",
 ]
 

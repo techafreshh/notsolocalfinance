@@ -1,8 +1,19 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, EmailStr
 from typing import List, Optional, Any
 from datetime import date
 
+class User(BaseModel):
+    id: str  # GitHub ID or local unique ID
+    username: str
+    email: Optional[EmailStr] = None
+    avatar_url: Optional[str] = None
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
 class Transaction(BaseModel):
+    user_id: Optional[str] = Field(default=None, description="The ID of the user who owns this transaction")
     date: str = Field(..., description="The date of the transaction (YYYY-MM-DD or equivalent)")
     description: str = Field(..., description="Description of the transaction")
     amount: float = Field(..., description="The amount of the transaction. Positive for income, negative for expenses.")

@@ -42,34 +42,35 @@ SYSTEM_PROMPT = (
 agent = Agent(
     'openrouter:mistralai/mistral-nemo',
     system_prompt=SYSTEM_PROMPT,
+    deps_type=str,
 )
 
 # Register Tools
-agent.tool_plain(get_spending_by_category)
-agent.tool_plain(get_largest_expenses)
-agent.tool_plain(semantic_search_transactions)
-agent.tool_plain(get_monthly_summary)
-agent.tool_plain(compare_periods)
-agent.tool_plain(get_income_by_source)
-agent.tool_plain(detect_anomalies)
-agent.tool_plain(get_transaction_frequency)
-agent.tool_plain(get_category_trend)
-agent.tool_plain(get_transactions_by_date_range)
-agent.tool_plain(get_spending_velocity)
-agent.tool_plain(get_running_balance)
-agent.tool_plain(get_total_credit_debit)
-agent.tool_plain(get_spending_by_description)
-agent.tool_plain(get_recipients)
-agent.tool_plain(get_day_of_week_analysis)
-agent.tool_plain(get_time_of_month_analysis)
-agent.tool_plain(get_largest_expense_categories)
-agent.tool_plain(find_similar_transactions)
-agent.tool_plain(get_merchant_spending)
-agent.tool_plain(get_top_merchants)
-agent.tool_plain(get_merchant_comparison)
-agent.tool_plain(detect_recurring_transactions)
-agent.tool_plain(get_subscription_summary)
-agent.tool_plain(get_upcoming_payments)
+agent.tool(get_spending_by_category)
+agent.tool(get_largest_expenses)
+agent.tool(semantic_search_transactions)
+agent.tool(get_monthly_summary)
+agent.tool(compare_periods)
+agent.tool(get_income_by_source)
+agent.tool(detect_anomalies)
+agent.tool(get_transaction_frequency)
+agent.tool(get_category_trend)
+agent.tool(get_transactions_by_date_range)
+agent.tool(get_spending_velocity)
+agent.tool(get_running_balance)
+agent.tool(get_total_credit_debit)
+agent.tool(get_spending_by_description)
+agent.tool(get_recipients)
+agent.tool(get_day_of_week_analysis)
+agent.tool(get_time_of_month_analysis)
+agent.tool(get_largest_expense_categories)
+agent.tool(find_similar_transactions)
+agent.tool(get_merchant_spending)
+agent.tool(get_top_merchants)
+agent.tool(get_merchant_comparison)
+agent.tool(detect_recurring_transactions)
+agent.tool(get_subscription_summary)
+agent.tool(get_upcoming_payments)
 
 def _convert_history_to_pydantic_ai(history: List[Dict[str, Any]]) -> List[ModelMessage]:
     """
@@ -88,7 +89,7 @@ def _convert_history_to_pydantic_ai(history: List[Dict[str, Any]]) -> List[Model
             
     return pydantic_history
 
-async def chat_with_ai(messages: List[Dict[str, Any]]) -> tuple[str, List[Dict[str, Any]]]:
+async def chat_with_ai(messages: List[Dict[str, Any]], user_id: str) -> tuple[str, List[Dict[str, Any]]]:
     """
     Handles a conversation using Pydantic AI and OpenRouter.
     Returns (response_text, updated_messages_list)
@@ -104,7 +105,11 @@ async def chat_with_ai(messages: List[Dict[str, Any]]) -> tuple[str, List[Dict[s
     history_messages = messages[:-1]
     
     try:
-        result = await agent.run(user_prompt, message_history=_convert_history_to_pydantic_ai(history_messages))
+        result = await agent.run(
+            user_prompt, 
+            message_history=_convert_history_to_pydantic_ai(history_messages),
+            deps=user_id
+        )
         
         # Build back JSON history format
         new_history = []

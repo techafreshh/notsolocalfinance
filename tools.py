@@ -3,15 +3,16 @@ from collections import defaultdict, Counter
 from statistics import mean, stdev
 from datetime import datetime, timedelta
 from difflib import SequenceMatcher
-from vdb import get_all_transactions, query_transactions
+from vdb import get_all_transactions_for_user, query_transactions
+from pydantic_ai import RunContext
 
-def get_spending_by_category(date_prefixes: list = None) -> str:
+def get_spending_by_category(ctx: RunContext[str], date_prefixes: list = None) -> str:
     """
     Returns a breakdown of spending (negative transactions) grouped by category.
     Use this to tell the user where their money is going overall.
     Optionally pass date_prefixes (list of YYYY or YYYY-MM) to filter by specific times.
     """
-    transactions = get_all_transactions()
+    transactions = get_all_transactions_for_user(ctx.deps)
     category_totals = {}
     
     for tx in transactions:
@@ -34,7 +35,7 @@ def get_spending_by_category(date_prefixes: list = None) -> str:
         
     return "\n".join(result)
 
-def get_largest_expenses(limit: int = 5, date_prefixes: list = None) -> str:
+def get_largest_expenses(ctx: RunContext[str], limit: int = 5, date_prefixes: list = None) -> str:
     """
     Returns the largest negative transactions (expenses) in the provided limit.
     Use this to tell the user what their biggest individual purchases were.
@@ -49,7 +50,7 @@ def get_largest_expenses(limit: int = 5, date_prefixes: list = None) -> str:
     except (ValueError, TypeError):
         limit = 5
         
-    transactions = get_all_transactions()
+    transactions = get_all_transactions_for_user(ctx.deps)
     
     # Filter for expenses and sort by amount ascending (largest negative first)
     expenses = []
@@ -75,14 +76,14 @@ def get_largest_expenses(limit: int = 5, date_prefixes: list = None) -> str:
         
     return "\n".join(result)
 
-def semantic_search_transactions(query: str, date_prefixes: list = None) -> str:
+def semantic_search_transactions(ctx: RunContext[str], query: str, date_prefixes: list = None) -> str:
     """
     Looks up specific transactions matching a user's semantic query.
     For example: "Amazon purchases", "restaurants last month", "salary".
     Optionally filter by date_prefixes (list of YYYY or YYYY-MM) to filter by specific times.
     Returns results broken down by month with monthly totals.
     """
-    results = query_transactions(query)
+    results = query_transactions(query, ctx.deps)
 
     # Apply date filtering if date_prefixes provided
     if date_prefixes and results:
@@ -139,12 +140,12 @@ def semantic_search_transactions(query: str, date_prefixes: list = None) -> str:
 
     return "\n".join(formatted)
 
-def get_total_credit_debit(date_prefixes: list = None) -> str:
+def get_total_credit_debit(ctx: RunContext[str], date_prefixes: list = None) -> str:
     """
     Calculates the exact total amount of money in (credit) and money out (debit).
     Optionally pass date_prefixes (list of YYYY or YYYY-MM) to filter by specific times.
     """
-    transactions = get_all_transactions()
+    transactions = get_all_transactions_for_user(ctx.deps)
     total_credit = 0.0
     total_debit = 0.0
     
@@ -165,13 +166,13 @@ def get_total_credit_debit(date_prefixes: list = None) -> str:
         
     return f"Total Credit (Money In): ₦{total_credit:.2f}\nTotal Debit (Money Out): ₦{abs(total_debit):.2f}"
 
-def get_spending_by_description(query: str, date_prefixes: list = None) -> str:
+def get_spending_by_description(ctx: RunContext[str], query: str, date_prefixes: list = None) -> str:
     """
     Calculates the exact total amount of money sent to or received from a specific entity/person/description.
     query: A search string like the name of a person or business (e.g. "John", "Amazon")
     Optionally pass date_prefixes (list of YYYY or YYYY-MM) to filter by specific times.
     """
-    transactions = get_all_transactions()
+    transactions = get_all_transactions_for_user(ctx.deps)
     total_credit = 0.0
     total_debit = 0.0
     found_count = 0
@@ -196,12 +197,12 @@ def get_spending_by_description(query: str, date_prefixes: list = None) -> str:
         
     return f"Found {found_count} transactions matching '{query}'.\nTotal Received from '{query}': ₦{total_credit:.2f}\nTotal Sent to '{query}': ₦{abs(total_debit):.2f}"
 
-def get_recipients(date_prefixes: list = None) -> str:
+def get_recipients(ctx: RunContext[str], date_prefixes: list = None) -> str:
     """
     Returns a list of all names/entities the user has sent money to (debits/expenses).
     Optionally pass date_prefixes (list of YYYY or YYYY-MM) to filter by specific times.
     """
-    transactions = get_all_transactions()
+    transactions = get_all_transactions_for_user(ctx.deps)
     recipients = {}
     
     for tx in transactions:
@@ -227,13 +228,13 @@ def get_recipients(date_prefixes: list = None) -> str:
     return "List of recipients and total amounts sent:\n" + "\n".join(result)
 
 
-def get_monthly_summary(date_prefixes: list = None) -> str:
+def get_monthly_summary(ctx: RunContext[str], date_prefixes: list = None) -> str:
     """
     Returns month-by-month breakdown of income, expenses, and net cash flow.
     Use this to show trends over multiple months or provide an overview of financial health by month.
     Optionally pass date_prefixes (list of YYYY or YYYY-MM) to filter by specific times.
     """
-    transactions = get_all_transactions()
+    transactions = get_all_transactions_for_user(ctx.deps)
     monthly_data = defaultdict(lambda: {"income": 0.0, "expenses": 0.0})
 
     for tx in transactions:
@@ -279,7 +280,7 @@ def get_monthly_summary(date_prefixes: list = None) -> str:
     return "\n".join(result)
 
 
-def compare_periods(period1_prefixes: list, period2_prefixes: list) -> str:
+def compare_periods(ctx: RunContext[str], period1_prefixes: list, period2_prefixes: list) -> str:
     """
     Compare spending between two time periods (e.g., Jan vs Feb or Q1 vs Q2).
     Shows the difference in amount and percentage, with breakdown by category.
@@ -294,7 +295,7 @@ def compare_periods(period1_prefixes: list, period2_prefixes: list) -> str:
     if not isinstance(period2_prefixes, list):
         period2_prefixes = [period2_prefixes]
 
-    transactions = get_all_transactions()
+    transactions = get_all_transactions_for_user(ctx.deps)
 
     def calculate_period_data(prefixes):
         total_income = 0.0
@@ -354,13 +355,13 @@ def compare_periods(period1_prefixes: list, period2_prefixes: list) -> str:
     return "\n".join(result)
 
 
-def get_income_by_source(date_prefixes: list = None) -> str:
+def get_income_by_source(ctx: RunContext[str], date_prefixes: list = None) -> str:
     """
     Groups income transactions by source/description.
     Use this to show where money is coming from (salary, transfers, refunds, etc.).
     Optionally pass date_prefixes (list of YYYY or YYYY-MM) to filter by specific times.
     """
-    transactions = get_all_transactions()
+    transactions = get_all_transactions_for_user(ctx.deps)
     source_totals = defaultdict(float)
     source_counts = defaultdict(int)
 
@@ -397,13 +398,13 @@ def get_income_by_source(date_prefixes: list = None) -> str:
     return "\n".join(result)
 
 
-def detect_anomalies(date_prefixes: list = None) -> str:
+def detect_anomalies(ctx: RunContext[str], date_prefixes: list = None) -> str:
     """
     Finds unusual transactions based on statistical outliers (amount/frequency).
     Flags transactions that are more than 2 standard deviations from the mean.
     Also detects potential duplicate transactions (same amount/description on same day).
     """
-    transactions = get_all_transactions()
+    transactions = get_all_transactions_for_user(ctx.deps)
     filtered_tx = []
 
     for tx in transactions:
@@ -485,13 +486,13 @@ def detect_anomalies(date_prefixes: list = None) -> str:
     return "\n".join(result)
 
 
-def get_transaction_frequency(query: str, date_prefixes: list = None) -> str:
+def get_transaction_frequency(ctx: RunContext[str], query: str, date_prefixes: list = None) -> str:
     """
     Shows how often money is spent at a specific merchant or for a query.
     Calculates the average days between transactions.
     """
     # Use semantic search to find matching transactions
-    results = query_transactions(query)
+    results = query_transactions(query, ctx.deps)
 
     # Apply date filtering if provided
     if date_prefixes and results:
@@ -558,7 +559,7 @@ def get_transaction_frequency(query: str, date_prefixes: list = None) -> str:
     return "\n".join(result)
 
 
-def get_category_trend(category: str, months: int = 6) -> str:
+def get_category_trend(ctx: RunContext[str], category: str, months: int = 6) -> str:
     """
     Track spending in one specific category over time.
     Shows month-by-month spending with trend indicator (increasing/decreasing/stable).
@@ -573,7 +574,7 @@ def get_category_trend(category: str, months: int = 6) -> str:
     except:
         months = 6
 
-    transactions = get_all_transactions()
+    transactions = get_all_transactions_for_user(ctx.deps)
     category_lower = category.lower()
 
     # Group spending by month for the specified category
@@ -641,7 +642,7 @@ def get_category_trend(category: str, months: int = 6) -> str:
     return "\n".join(result)
 
 
-def get_transactions_by_date_range(start_date: str, end_date: str, query: str = "") -> str:
+def get_transactions_by_date_range(ctx: RunContext[str], start_date: str, end_date: str, query: str = "") -> str:
     """
     Filter transactions by exact date range with optional semantic query.
     start_date: Start date in YYYY-MM-DD format
@@ -665,7 +666,7 @@ def get_transactions_by_date_range(start_date: str, end_date: str, query: str = 
     if query:
         transactions = query_transactions(query)
     else:
-        transactions = get_all_transactions()
+        transactions = get_all_transactions_for_user(ctx.deps)
 
     # Filter by date range
     filtered = []
@@ -723,7 +724,7 @@ def get_transactions_by_date_range(start_date: str, end_date: str, query: str = 
     return "\n".join(result)
 
 
-def get_spending_velocity(date_prefixes: list = None, period: str = "daily") -> str:
+def get_spending_velocity(ctx: RunContext[str], date_prefixes: list = None, period: str = "daily") -> str:
     """
     Calculate daily or weekly average spending rate.
     Shows how quickly money is being spent.
@@ -731,7 +732,7 @@ def get_spending_velocity(date_prefixes: list = None, period: str = "daily") -> 
     if period not in ["daily", "weekly"]:
         period = "daily"
 
-    transactions = get_all_transactions()
+    transactions = get_all_transactions_for_user(ctx.deps)
     filtered_expenses = []
     unique_dates = set()
 
@@ -805,12 +806,12 @@ def get_spending_velocity(date_prefixes: list = None, period: str = "daily") -> 
     return "\n".join(result)
 
 
-def get_running_balance(date_prefixes: list = None) -> str:
+def get_running_balance(ctx: RunContext[str], date_prefixes: list = None) -> str:
     """
     Simulate account balance over time based on transaction amounts.
     Shows running total and identifies highest/lowest balance points.
     """
-    transactions = get_all_transactions()
+    transactions = get_all_transactions_for_user(ctx.deps)
     filtered = []
 
     for tx in transactions:
@@ -881,12 +882,12 @@ def get_running_balance(date_prefixes: list = None) -> str:
     return "\n".join(result)
 
 
-def get_day_of_week_analysis(date_prefixes: list = None) -> str:
+def get_day_of_week_analysis(ctx: RunContext[str], date_prefixes: list = None) -> str:
     """
     Analyze spending patterns by day of week.
     Compares weekday (Mon-Fri) vs weekend (Sat-Sun) spending.
     """
-    transactions = get_all_transactions()
+    transactions = get_all_transactions_for_user(ctx.deps)
     filtered = []
 
     for tx in transactions:
@@ -976,12 +977,12 @@ def get_day_of_week_analysis(date_prefixes: list = None) -> str:
     return "\n".join(result)
 
 
-def get_time_of_month_analysis(date_prefixes: list = None) -> str:
+def get_time_of_month_analysis(ctx: RunContext[str], date_prefixes: list = None) -> str:
     """
     Analyze spending patterns by time of month.
     Compares early month (1-10), mid-month (11-20), and end-of-month (21-31).
     """
-    transactions = get_all_transactions()
+    transactions = get_all_transactions_for_user(ctx.deps)
     filtered = []
 
     for tx in transactions:
@@ -1044,7 +1045,7 @@ def get_time_of_month_analysis(date_prefixes: list = None) -> str:
     return "\n".join(result)
 
 
-def get_largest_expense_categories(limit: int = 5, date_prefixes: list = None) -> str:
+def get_largest_expense_categories(ctx: RunContext[str], limit: int = 5, date_prefixes: list = None) -> str:
     """
     Returns the largest expense categories with trend alerts.
     Shows top categories by total spending with month-over-month comparison.
@@ -1056,7 +1057,7 @@ def get_largest_expense_categories(limit: int = 5, date_prefixes: list = None) -
     except:
         limit = 5
 
-    transactions = get_all_transactions()
+    transactions = get_all_transactions_for_user(ctx.deps)
     filtered = []
 
     for tx in transactions:
@@ -1120,12 +1121,12 @@ def get_largest_expense_categories(limit: int = 5, date_prefixes: list = None) -
     return "\n".join(result)
 
 
-def find_similar_transactions(query: str, date_prefixes: list = None) -> str:
+def find_similar_transactions(ctx: RunContext[str], query: str, date_prefixes: list = None) -> str:
     """
     Find transactions similar to a query using semantic search.
     Groups related purchases and shows patterns.
     """
-    results = query_transactions(query)
+    results = query_transactions(query, ctx.deps)
 
     # Apply date filtering
     if date_prefixes and results:
@@ -1190,12 +1191,12 @@ def find_similar_transactions(query: str, date_prefixes: list = None) -> str:
     return "\n".join(result)
 
 
-def get_merchant_spending(merchant: str, date_prefixes: list = None) -> str:
+def get_merchant_spending(ctx: RunContext[str], merchant: str, date_prefixes: list = None) -> str:
     """
     Get total spending at a specific merchant over time.
     Shows transaction history and monthly totals.
     """
-    transactions = get_all_transactions()
+    transactions = get_all_transactions_for_user(ctx.deps)
     merchant_lower = merchant.lower()
 
     matching = []
@@ -1260,7 +1261,7 @@ def get_merchant_spending(merchant: str, date_prefixes: list = None) -> str:
     return "\n".join(result)
 
 
-def get_top_merchants(limit: int = 10, date_prefixes: list = None) -> str:
+def get_top_merchants(ctx: RunContext[str], limit: int = 10, date_prefixes: list = None) -> str:
     """
     Returns the most frequented or highest-spend merchants.
     Ranks by total spending and transaction count.
@@ -1272,7 +1273,7 @@ def get_top_merchants(limit: int = 10, date_prefixes: list = None) -> str:
     except:
         limit = 10
 
-    transactions = get_all_transactions()
+    transactions = get_all_transactions_for_user(ctx.deps)
     filtered = []
 
     for tx in transactions:
@@ -1325,7 +1326,7 @@ def get_top_merchants(limit: int = 10, date_prefixes: list = None) -> str:
     return "\n".join(result)
 
 
-def get_merchant_comparison(merchant1: str, merchant2: str, date_prefixes: list = None) -> str:
+def get_merchant_comparison(ctx: RunContext[str], merchant1: str, merchant2: str, date_prefixes: list = None) -> str:
     """
     Compare spending between two merchants.
     Shows transaction counts, totals, and average transaction size.
@@ -1333,7 +1334,7 @@ def get_merchant_comparison(merchant1: str, merchant2: str, date_prefixes: list 
     if not merchant1 or not merchant2:
         return "Error: Both merchant names are required."
 
-    transactions = get_all_transactions()
+    transactions = get_all_transactions_for_user(ctx.deps)
     filtered = []
 
     for tx in transactions:
@@ -1389,7 +1390,7 @@ def get_merchant_comparison(merchant1: str, merchant2: str, date_prefixes: list 
     return "\n".join(result)
 
 
-def detect_recurring_transactions(date_prefixes: list = None, min_occurrences: int = 3) -> str:
+def detect_recurring_transactions(ctx: RunContext[str], date_prefixes: list = None, min_occurrences: int = 3) -> str:
     """
     Identify subscriptions and recurring payments.
     Finds transactions with similar amounts on regular intervals.
@@ -1401,7 +1402,7 @@ def detect_recurring_transactions(date_prefixes: list = None, min_occurrences: i
     except:
         min_occurrences = 3
 
-    transactions = get_all_transactions()
+    transactions = get_all_transactions_for_user(ctx.deps)
     filtered = []
 
     for tx in transactions:
@@ -1486,19 +1487,19 @@ def detect_recurring_transactions(date_prefixes: list = None, min_occurrences: i
     return "\n".join(result)
 
 
-def get_subscription_summary(date_prefixes: list = None) -> str:
+def get_subscription_summary(ctx: RunContext[str], date_prefixes: list = None) -> str:
     """
     List all recurring charges with monthly total.
     Similar to detect_recurring but focused on subscription summary.
     """
     # Reuse detection logic but format as summary
-    result_text = detect_recurring_transactions(date_prefixes, min_occurrences=2)
+    result_text = detect_recurring_transactions(ctx, date_prefixes, min_occurrences=2)
 
     if "No recurring" in result_text:
         return "No active subscriptions detected."
 
     # Parse and reformat as summary
-    transactions = get_all_transactions()
+    transactions = get_all_transactions_for_user(ctx.deps)
     filtered = []
 
     for tx in transactions:
@@ -1555,7 +1556,7 @@ def get_subscription_summary(date_prefixes: list = None) -> str:
     return "\n".join(result)
 
 
-def get_upcoming_payments(days: int = 30, date_prefixes: list = None) -> str:
+def get_upcoming_payments(ctx: RunContext[str], days: int = 30, date_prefixes: list = None) -> str:
     """
     Predict upcoming recurring payments in the next N days.
     Based on detected recurring transaction patterns.
@@ -1567,7 +1568,7 @@ def get_upcoming_payments(days: int = 30, date_prefixes: list = None) -> str:
     except:
         days = 30
 
-    transactions = get_all_transactions()
+    transactions = get_all_transactions_for_user(ctx.deps)
     today = datetime.now()
     cutoff = today + timedelta(days=days)
 

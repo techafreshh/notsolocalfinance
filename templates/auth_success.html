@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Logging in...</title>
+</head>
+<body>
+    <script>
+        const token = "{{ token }}";
+        const username = "{{ username }}";
+        if (token) {
+            localStorage.setItem('finance_ai_token', token);
+            localStorage.setItem('finance_ai_username', username);
+            window.location.href = "/";
+        } else {
+            document.body.innerHTML = "Login failed. <a href='/'>Retry</a>";
+        }
+    </script>
+</body>
+</html>
