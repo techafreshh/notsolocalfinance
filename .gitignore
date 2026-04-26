@@ -8,3 +8,4 @@ env.bak/
 venv.bak/
 examples/
 __pycache__/
+.agents/
