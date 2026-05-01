@@ -11,11 +11,23 @@
       "sourceType": "github",
       "computedHash": "79ca799628334a9699838756571109d35e73701ef5a375b7f4e0da1e14b419a8"
     },
+    "landing-page-design": {
+      "source": "omer-metin/skills-for-antigravity",
+      "sourceType": "github",
+      "skillPath": "skills/landing-page-design/SKILL.md",
+      "computedHash": "73bd88ca54f5a9bb75b5bcf8a61601bbda27f16d37eed69b4562ffc88e60e4b6"
+    },
     "langfuse": {
       "source": "langfuse/skills",
       "sourceType": "github",
       "skillPath": "skills/langfuse/SKILL.md",
       "computedHash": "a72c15d6329867b84c4e7456f4e04d8c06ce5298d1d0068dbe864b8b00fb406c"
+    },
+    "ui-ux-pro-max": {
+      "source": "nextlevelbuilder/ui-ux-pro-max-skill",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/ui-ux-pro-max/SKILL.md",
+      "computedHash": "6337038fe1fe6bbe1b9f252ab678ee575859190bab6f0f246f4061824eb40875"
     }
   }
 }
