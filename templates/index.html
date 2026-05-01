@@ -4,35 +4,259 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Finance AI</title>
-    <!-- Google Fonts for sleek typography -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <title>Finance AI — Premium Assistant</title>
+    <!-- Google Fonts: Inter with more weights -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/static/style.css">
     <!-- Marked.js for Markdown parsing -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 
 <body>
-    <!-- Auth Overlay -->
+    <script>
+        // Immediate theme application to prevent flicker
+        (function() {
+            const theme = localStorage.getItem('finance_ai_theme') || 'light';
+            if (theme === 'light') {
+                document.body.classList.add('light-theme');
+            }
+        })();
+    </script>
+    <!-- Landing Page / Auth Overlay -->
     <div id="auth-overlay" class="auth-overlay">
-        <div class="auth-card">
-            <div class="auth-header">
-                <h1>Finance AI</h1>
-                <p id="auth-subtitle">Login to access your personal finance assistant</p>
+        <div class="fixed-background"></div>
+        <!-- Navigation -->
+        <nav id="navbar" class="navbar">
+            <div class="nav-container">
+                <div class="logo">
+                    <span class="logo-text"><span style="font-weight: 700;">Fynd</span> <span style="font-weight: 400;">Kaily</span></span>
+                </div>
+                <div class="nav-links">
+                    <a href="#">Product</a>
+                    <a href="#">Solutions</a>
+                    <a href="#">Resources</a>
+                    <a href="#">Pricing</a>
+                </div>
+                <div class="nav-actions">
+                    <a href="/login/github" class="btn-ghost-purple">
+                        Sign In
+                    </a>
+                    <a href="#" class="btn-light-purple">
+                        <i data-lucide="calendar" style="width: 16px; height: 16px;"></i>
+                        Book a demo
+                    </a>
+                </div>
             </div>
+        </nav>
 
-            <div class="auth-options">
-                <a href="/login/github" class="github-btn">
-                    <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-                        <path
-                            d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12" />
-                    </svg>
-                    Continue with GitHub
-                </a>
+        <main class="landing-main">
+            <!-- Hero Section -->
+            <section id="hero" class="landing-section hero">
+                <div class="hero-container">
+                    <div class="hero-tag-line">
+                        <div class="tag-dash"></div>
+                        <span class="tag-text">Next-Gen Intelligence</span>
+                    </div>
+                    
+                    <h1 class="hero-title">
+                        A Finance Chatbot<br />
+                        tailored to your needs.
+                    </h1>
+                    
+                    <div class="hero-footer">
+                        <p class="hero-subtitle">
+                            A sophisticated AI layer for your financial raw data. Upload statements, 
+                            detect patterns, and query your history with mathematical precision.
+                        </p>
+                        
+                        <div class="hero-cta-stack">
+                            <a href="/login/github" class="btn-primary-purple">
+                                <i data-lucide="sparkles" style="width: 20px; height: 20px;"></i>
+                                Try for free
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Side Rail Text -->
+                <div class="side-rail-fixed">
+                    <div class="rail-inner">
+                        <div class="rail-line"></div>
+                        FINANCIAL INTELLIGENCE LAYER // V.1.0.4
+                        <div class="rail-line"></div>
+                    </div>
+                </div>
+            </section>
+
+
+            <section id="features" class="capabilities-section">
+                <div class="capabilities-header">
+                    <h2 class="cap-section-title">Core Capabilities</h2>
+                    <div class="sync-status">
+                        <i data-lucide="sparkles" style="width: 16px; height: 16px;"></i>
+                        Synced with Gemini 2.0
+                    </div>
+                </div>
+
+                <div class="cap-grid">
+                    <div class="cap-card-item">
+                        <div class="cap-num">01</div>
+                        <div class="cap-icon-box"><i data-lucide="bar-chart-3"></i></div>
+                        <h3 class="cap-card-title">Category Insights</h3>
+                        <p class="cap-card-desc">Advanced breakdown of every dollar spent across merchants and categories.</p>
+                        <div class="cap-badge-row">
+                            <span class="cap-badge">Category</span>
+                            <span class="cap-badge">Merchant</span>
+                        </div>
+                    </div>
+                    <div class="cap-card-item">
+                        <div class="cap-num">02</div>
+                        <div class="cap-icon-box"><i data-lucide="file-search"></i></div>
+                        <h3 class="cap-card-title">Semantic Analysis</h3>
+                        <p class="cap-card-desc">Ask natural language questions about your transactions with context-aware search.</p>
+                        <div class="cap-badge-row">
+                            <span class="cap-badge">Semantic Search</span>
+                            <span class="cap-badge">Context</span>
+                        </div>
+                    </div>
+                    <div class="cap-card-item">
+                        <div class="cap-num">03</div>
+                        <div class="cap-icon-box"><i data-lucide="alert-circle"></i></div>
+                        <h3 class="cap-card-title">Anomaly Guard</h3>
+                        <p class="cap-card-desc">Real-time detection of unusual spending spikes and billing errors.</p>
+                        <div class="cap-badge-row">
+                            <span class="cap-badge">Anomalies</span>
+                            <span class="cap-badge">Protection</span>
+                        </div>
+                    </div>
+                    <div class="cap-card-item">
+                        <div class="cap-num">04</div>
+                        <div class="cap-icon-box"><i data-lucide="credit-card"></i></div>
+                        <h3 class="cap-card-title">Subscription Hub</h3>
+                        <p class="cap-card-desc">Predictive tracking for all upcoming payments and subscription summaries.</p>
+                        <div class="cap-badge-row">
+                            <span class="cap-badge">Subscriptions</span>
+                            <span class="cap-badge">Upcoming</span>
+                        </div>
+                    </div>
+                    <div class="cap-card-item">
+                        <div class="cap-num">05</div>
+                        <div class="cap-icon-box"><i data-lucide="trending-up"></i></div>
+                        <h3 class="cap-card-title">Cashflow Trends</h3>
+                        <p class="cap-card-desc">Monitor running balances and spending velocity with automated projections.</p>
+                        <div class="cap-badge-row">
+                            <span class="cap-badge">Velocity</span>
+                            <span class="cap-badge">Projections</span>
+                        </div>
+                    </div>
+                    <div class="cap-card-item">
+                        <div class="cap-num">06</div>
+                        <div class="cap-icon-box"><i data-lucide="repeat"></i></div>
+                        <h3 class="cap-card-title">Recurrence Map</h3>
+                        <p class="cap-card-desc">Visualize subscription cycles and identify forgotten recurring costs.</p>
+                        <div class="cap-badge-row">
+                            <span class="cap-badge">Cycles</span>
+                            <span class="cap-badge">Costs</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Secure Section -->
+            <section id="security" class="security-section">
+                <div class="security-flex">
+                    <div class="security-text-block">
+                        <div class="security-icon-circle"><i data-lucide="shield" style="width: 40px; height: 40px;"></i></div>
+                        <h2 class="security-heading">Encrypted <br>by Design.</h2>
+                        <p class="security-subtext">
+                            We prioritize absolute privacy. Your statements are processed in volatile memory 
+                            and never persisted. All authentication is handled through GitHub's secure OAuth 2.0 flow.
+                        </p>
+                    </div>
+                    <div class="security-spec-grid">
+                        <div class="spec-card">
+                            <div class="spec-dot"></div>
+                            <h4 class="spec-title">Stateless</h4>
+                            <p class="spec-desc">No database persistence</p>
+                        </div>
+                        <div class="spec-card">
+                            <div class="spec-dot"></div>
+                            <h4 class="spec-title">AES-256</h4>
+                            <p class="spec-desc">Military grade transit</p>
+                        </div>
+                        <div class="spec-card">
+                            <div class="spec-dot"></div>
+                            <h4 class="spec-title">JWT Only</h4>
+                            <p class="spec-desc">Session based auth</p>
+                        </div>
+                        <div class="spec-card">
+                            <div class="spec-dot"></div>
+                            <h4 class="spec-title">Isolated</h4>
+                            <p class="spec-desc">Sandboxed parsing</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- CTA Banner -->
+            {% if not user %}
+            <section id="cta" class="cta-banner-section">
+                <div class="cta-banner-card">
+                    <h2 class="cta-banner-title">Ready to find <br>true clarity?</h2>
+                    <a href="/login/github" class="cta-banner-btn">
+                        <i data-lucide="github" style="width: 32px; height: 32px;"></i>
+                        Connect Now
+                    </a>
+                    <div class="cta-glow-effect"></div>
+                </div>
+            </section>
+            {% endif %}
+        </main>
+
+        <!-- Footer -->
+        <footer class="site-footer">
+            <div class="footer-grid">
+                <div class="footer-brand-col">
+                    <div class="logo">
+                        <div class="logo-box small">F</div>
+                        <span class="logo-text small">FIN.</span>
+                    </div>
+                    <p class="footer-brand-pitch">
+                        Engineered for financial transparency using modern AI. 
+                        The future of accounting is algorithmic.
+                    </p>
+                </div>
+                <div class="footer-links-container">
+                    <div class="footer-link-col">
+                        <span class="footer-col-label">System</span>
+                        <a href="#">Capabilities</a>
+                        <a href="#">Security</a>
+                        <a href="#">Process</a>
+                    </div>
+                    <div class="footer-link-col">
+                        <span class="footer-col-label">Legal</span>
+                        <a href="#">Privacy</a>
+                        <a href="#">Terms</a>
+                        <a href="#">Usage</a>
+                    </div>
+                    <div class="footer-link-col">
+                        <span class="footer-col-label">Support</span>
+                        <a href="#">Contact</a>
+                        <a href="#">Integrations</a>
+                        <a href="#">API</a>
+                    </div>
+                </div>
             </div>
-
-            <div id="auth-error" class="status-msg error hidden"></div>
-        </div>
+            <div class="footer-status-row">
+                <div class="footer-copyright">&copy; 2026 INTERNAL AFFAIRS // ALL SYSTEMS NOMINAL</div>
+                <div class="footer-status-pill">
+                    <div class="status-pulse-dot"></div>
+                    Live System Status
+                </div>
+            </div>
+        </footer>
     </div>
 
     <div class="app-container hidden" id="app-main">
@@ -40,32 +264,36 @@
         <aside class="sidebar">
             <div class="sidebar-header">
                 <h2>Finance AI</h2>
-                <span class="badge">Mistral Nemo</span>
-            </div>
-
-            <div class="user-profile">
-                <span id="display-username">Username</span>
-                <button id="logout-btn" class="text-btn">Logout</button>
+                <div class="header-actions">
+                    <button id="theme-toggle" class="icon-btn" title="Toggle Theme">
+                        <i data-lucide="moon" class="dark-icon"></i>
+                        <i data-lucide="sun" class="light-icon hidden"></i>
+                    </button>
+                </div>
             </div>
 
             <div class="upload-section">
                 <h3>Upload Statements</h3>
-                <p>Upload your CSV or PDF bank statements to analyze your spending.</p>
+                <p>Ingest CSV or PDF bank statements to unlock insights.</p>
                 <form id="upload-form">
                     <input type="file" id="file-input" accept=".csv, .pdf" required>
-                    <label for="file-input" class="file-label">Choose File</label>
+                    <label for="file-input" class="file-label">
+                        <i data-lucide="upload-cloud" style="margin-bottom: 8px; opacity: 0.7;"></i>
+                        Choose File
+                    </label>
                     <span id="file-name" class="file-name">No file chosen</span>
-                    <button type="submit" id="upload-btn" class="primary-btn">Upload</button>
+                    <button type="submit" id="upload-btn" class="primary-btn">Analyze Data</button>
                 </form>
                 <div id="upload-status" class="status-msg hidden"></div>
+            </div>
 
-                <hr style="margin: 1.5rem 0; border: 0; border-top: 1px solid var(--border-color);">
+            <div class="delete-section">
+                <button id="clear-data-btn" class="danger-btn">Wipe All Records</button>
+            </div>
 
-                <div class="delete-section" style="text-align: center;">
-                    <button id="clear-data-btn" class="danger-btn"
-                        style="width: 100%; border: 1px solid #ff4d4f; color: #ff4d4f; background: transparent; padding: 0.75rem; border-radius: 8px; cursor: pointer; transition: all 0.2s;">Wipe
-                        Database (Clear All Data)</button>
-                </div>
+            <div class="user-profile">
+                <span id="display-username">Username</span>
+                <button id="logout-btn" class="text-btn">Sign Out</button>
             </div>
         </aside>
 
@@ -74,43 +302,48 @@
             <div class="chat-header">
                 <div class="header-titles">
                     <h3>Financial Assistant</h3>
-                    <p>Ask questions about your transactions, spending habits, or biggest expenses.</p>
+                    <p>Conversational analysis of your spending habits.</p>
                 </div>
-                <button id="clear-chat-btn" class="secondary-btn">New Chat</button>
+                <button id="clear-chat-btn" class="secondary-btn">New Session</button>
             </div>
 
             <div class="chat-window" id="chat-window">
                 <!-- Messages will appear here -->
                 <div class="message ai">
-                    <div class="avatar">AI</div>
+                    <div class="avatar"><i data-lucide="bot" size="18"></i></div>
                     <div class="msg-content">
                         <p>Hello! 👋 I'm your <strong>Financial Assistant</strong>.</p>
                         <p>To get started:</p>
                         <ul>
-                            <li><strong>Upload</strong> your bank statement (CSV or PDF) on the left.</li>
-                            <li><strong>Ask</strong> me anything about your spending, trends, or specific transactions.
-                            </li>
+                            <li><strong>Upload</strong> your bank statement on the left.</li>
+                            <li><strong>Ask</strong> me anything about your trends or specific transactions.</li>
                         </ul>
                     </div>
                 </div>
             </div>
 
+            <div id="sample-questions" class="sample-questions">
+                <div class="sample-badge" data-query="What is my total spending for the period?">Total Spending</div>
+                <div class="sample-badge" data-query="Identify my top 5 biggest expenses.">Top Expenses</div>
+                <div class="sample-badge" data-query="Find all recurring subscriptions or monthly bills.">Subscriptions</div>
+                <div class="sample-badge" data-query="Summarize my spending by category.">Categories</div>
+            </div>
+
             <form id="chat-form" class="chat-input-area">
-                <input type="text" id="chat-input" placeholder="e.g., Explain my financial gbese" required
-                    autocomplete="off">
-                <button type="submit" id="send-btn" class="send-btn">
-                    <svg viewBox="0 0 24 24" fill="none" class="send-icon">
-                        <path d="M22 2L11 13" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                            stroke-linejoin="round"></path>
-                        <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="currentColor" stroke-width="2"
-                            stroke-linecap="round" stroke-linejoin="round"></path>
-                    </svg>
+                <input type="text" id="chat-input" placeholder="Upload a statement to start chatting..." required
+                    autocomplete="off" disabled>
+                <button type="submit" id="send-btn" class="send-btn" disabled>
+                    <i data-lucide="send" size="20"></i>
                 </button>
             </form>
         </main>
     </div>
 
-    <script src="/static/app.js?v=4.0"></script>
+    <script src="/static/app.js?v=5.0"></script>
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+    </script>
 </body>
 
 </html>

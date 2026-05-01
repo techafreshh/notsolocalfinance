@@ -1,4 +1,9 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // Initialize Lucide icons
+    if (window.lucide) {
+        lucide.createIcons();
+    }
+
     // --- Auth State & Elements ---
     let token = localStorage.getItem('finance_ai_token');
     let username = localStorage.getItem('finance_ai_username');
@@ -22,6 +27,41 @@ document.addEventListener('DOMContentLoaded', () => {
     const chatWindow = document.getElementById('chat-window');
     const clearChatBtn = document.getElementById('clear-chat-btn');
     const clearDataBtn = document.getElementById('clear-data-btn');
+    const themeToggle = document.getElementById('theme-toggle');
+    const sampleQuestions = document.getElementById('sample-questions');
+
+    // --- Theme Management ---
+    let currentTheme = localStorage.getItem('finance_ai_theme') || 'light';
+    
+    function applyTheme(theme) {
+        if (theme === 'light') {
+            document.body.classList.add('light-theme');
+        } else {
+            document.body.classList.remove('light-theme');
+        }
+        localStorage.setItem('finance_ai_theme', theme);
+        updateThemeIcons(theme);
+    }
+
+    function updateThemeIcons(theme) {
+        const moonIcon = themeToggle.querySelector('.dark-icon');
+        const sunIcon = themeToggle.querySelector('.light-icon');
+        if (theme === 'light') {
+            moonIcon.classList.add('hidden');
+            sunIcon.classList.remove('hidden');
+        } else {
+            moonIcon.classList.remove('hidden');
+            sunIcon.classList.add('hidden');
+        }
+    }
+
+    themeToggle.addEventListener('click', () => {
+        currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        applyTheme(currentTheme);
+    });
+
+    // Initialize theme
+    applyTheme(currentTheme);
 
     function generateSessionId() {
         return (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : 'session-' + Date.now() + '-' + Math.random().toString(36).substring(2);
@@ -46,19 +86,36 @@ document.addEventListener('DOMContentLoaded', () => {
 
     console.log("Finance AI Initialized with Session ID:", sessionId);
 
+    function enableChat() {
+        chatInput.disabled = false;
+        sendBtn.disabled = false;
+        chatInput.placeholder = "Ask about your finances...";
+        sampleQuestions.classList.remove('hidden');
+    }
+
+    function disableChat() {
+        chatInput.disabled = true;
+        sendBtn.disabled = true;
+        chatInput.placeholder = "Upload a statement to start chatting...";
+        sampleQuestions.classList.add('hidden');
+    }
+
+    // Handle sample question clicks
+    sampleQuestions.addEventListener('click', (e) => {
+        const badge = e.target.closest('.sample-badge');
+        if (badge) {
+            chatInput.value = badge.dataset.query;
+            chatInput.focus();
+        }
+    });
+
     // Restore UI from history
     if (conversationHistory.length > 0) {
         chatWindow.innerHTML = ''; // Clear default greeting
         for (const msg of conversationHistory) {
-            const sender = msg.role === 'user' ? 'User' : 'AI';
-            const msgDiv = document.createElement('div');
-            msgDiv.className = `message ${sender.toLowerCase()}`;
-            msgDiv.innerHTML = `
-                <div class="avatar">${sender === 'User' ? 'U' : 'AI'}</div>
-                <div class="msg-content">${sender === 'User' ? escapeHTML(msg.content) : marked.parse(msg.content)}</div>
-            `;
-            chatWindow.appendChild(msgDiv);
+            addMessageToChat(msg.role === 'assistant' ? 'AI' : 'User', msg.content, false);
         }
+        enableChat();
         // Defer scroll to bottom to ensure elements are rendered
         setTimeout(() => { chatWindow.scrollTop = chatWindow.scrollHeight; }, 100);
     }
@@ -125,7 +182,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!file) return;
 
         uploadBtn.disabled = true;
-        uploadBtn.textContent = 'Uploading...';
+        uploadBtn.textContent = 'Processing...';
         uploadStatus.className = 'status-msg hidden';
 
         const formData = new FormData();
@@ -148,6 +205,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 conversationHistory.push({ role: 'assistant', content: replyText });
                 saveSession();
                 addMessageToChat('AI', replyText);
+                enableChat();
             } else {
                 showStatus(result.detail || 'Upload failed', 'error');
             }
@@ -155,7 +213,7 @@ document.addEventListener('DOMContentLoaded', () => {
             showStatus('Network error during upload', 'error');
         } finally {
             uploadBtn.disabled = false;
-            uploadBtn.textContent = 'Upload';
+            uploadBtn.textContent = 'Analyze Data';
         }
     });
 
@@ -166,22 +224,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (clearDataBtn) {
         clearDataBtn.addEventListener('click', async () => {
-            if (!confirm("Are you sure you want to delete all your stored transactions?")) return;
+            if (!confirm("Are you sure you want to delete all your stored transactions? This action cannot be undone.")) return;
             clearDataBtn.disabled = true;
             clearDataBtn.textContent = 'Wiping...';
             try {
                 const response = await authFetch('/clear', { method: 'POST' });
                 if (!response) return;
-                if (response.ok) alert("Data cleared successfully!");
-                else {
+                if (response.ok) {
+                    showStatus("Data cleared successfully!", 'success');
+                    setTimeout(() => location.reload(), 1500);
+                } else {
                     const error = await response.json();
-                    alert("Error: " + (error.detail || 'Unknown error'));
+                    showStatus("Error: " + (error.detail || 'Unknown error'), 'error');
                 }
             } catch (err) {
-                alert("Network error.");
+                showStatus("Network error.", 'error');
             } finally {
                 clearDataBtn.disabled = false;
-                clearDataBtn.textContent = 'Wipe Database (Clear All Data)';
+                clearDataBtn.textContent = 'Wipe All Records';
             }
         });
     }
@@ -236,22 +296,32 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     clearChatBtn.addEventListener('click', () => {
+        if (conversationHistory.length === 0) return;
         conversationHistory = [];
         sessionId = generateSessionId();
         saveSession();
         console.log("New chat started with session_id:", sessionId);
-        chatWindow.innerHTML = `<div class="message ai"><div class="avatar">AI</div><div class="msg-content"><p>History cleared. What's next?</p></div></div>`;
+        chatWindow.innerHTML = '';
+        addMessageToChat('AI', 'Session reset. I\'m ready for new questions.');
+        disableChat();
     });
 
-    function addMessageToChat(sender, text) {
+    function addMessageToChat(sender, text, scroll = true) {
         const msgDiv = document.createElement('div');
         msgDiv.className = `message ${sender.toLowerCase()}`;
+        
+        const iconName = sender === 'User' ? 'user' : 'bot';
+        
         msgDiv.innerHTML = `
-            <div class="avatar">${sender === 'User' ? 'U' : 'AI'}</div>
+            <div class="avatar"><i data-lucide="${iconName}" size="18"></i></div>
             <div class="msg-content">${sender === 'User' ? escapeHTML(text) : marked.parse(text)}</div>
         `;
         chatWindow.appendChild(msgDiv);
-        scrollToBottom();
+        
+        // Render new icons
+        lucide.createIcons();
+        
+        if (scroll) scrollToBottom();
     }
 
     function addTypingIndicator() {
@@ -259,8 +329,16 @@ document.addEventListener('DOMContentLoaded', () => {
         const msgDiv = document.createElement('div');
         msgDiv.className = 'message ai';
         msgDiv.id = id;
-        msgDiv.innerHTML = `<div class="avatar">AI</div><div class="typing-indicator"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>`;
+        msgDiv.innerHTML = `
+            <div class="avatar"><i data-lucide="bot" size="18"></i></div>
+            <div class="typing-indicator">
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+            </div>
+        `;
         chatWindow.appendChild(msgDiv);
+        lucide.createIcons();
         scrollToBottom();
         return id;
     }
